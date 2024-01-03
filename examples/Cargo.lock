@@ -285,6 +285,7 @@ checksum = "8c3c1a368f70d6cf7302d78f8f7093da241fb8e8807c05cc9e51a125895a6d5b"
 name = "basic_room"
 version = "0.1.0"
 dependencies = [
+ "dotenv",
  "env_logger",
  "livekit",
  "livekit-api",
@@ -830,6 +831,12 @@ checksum = "330c60081dcc4c72131f8eb70510f1ac07223e5d4163db481a04a0befcffa412"
 dependencies = [
  "libloading 0.8.1",
 ]
+
+[[package]]
+name = "dotenv"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
 
 [[package]]
 name = "downcast-rs"
@@ -2500,6 +2507,19 @@ name = "pkg-config"
 version = "0.3.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "26072860ba924cbfa98ea39c8c19b4dd6a4a25423dbdf219c1eca91aa0cf6964"
+
+[[package]]
+name = "play_from_disk"
+version = "0.1.0"
+dependencies = [
+ "dotenv",
+ "env_logger",
+ "livekit",
+ "livekit-api",
+ "log",
+ "thiserror",
+ "tokio",
+]
 
 [[package]]
 name = "png"

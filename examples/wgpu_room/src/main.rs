@@ -34,7 +34,7 @@ fn main() {
     });
 
     eframe::run_native(
-        "LiveKit - Rust App",
+        "Babelfish",
         eframe::NativeOptions {
             follow_system_theme: true,
             centered: true,

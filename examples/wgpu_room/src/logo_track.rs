@@ -16,6 +16,7 @@ use std::time::Duration;
 use tokio::sync::oneshot;
 use tokio::task::JoinHandle;
 
+
 // The logo must not be bigger than the framebuffer
 const PIXEL_SIZE: usize = 4;
 const FRAME_RATE: u64 = 30;

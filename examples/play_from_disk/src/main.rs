@@ -7,6 +7,7 @@ use livekit::{
     },
     Room, RoomOptions,
 };
+use livekit_api::access_token;
 use std::{env, mem::size_of, sync::Arc, time::Duration};
 use std::{error::Error, io};
 use thiserror::Error;
@@ -105,10 +106,31 @@ impl<R: AsyncRead + Unpin> WavReader<R> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+
+    dotenv::dotenv().ok();
+
     env_logger::init();
 
     let url = env::var("LIVEKIT_URL").expect("LIVEKIT_URL is not set");
     let token = env::var("LIVEKIT_TOKEN").expect("LIVEKIT_TOKEN is not set");
+    // let api_key = env::var("LIVEKIT_API_KEY").expect("LIVEKIT_API_KEY is not set");
+    // let api_secret = env::var("LIVEKIT_API_SECRET").expect("LIVEKIT_API_SECRET is not set");
+    // let token = access_token::AccessToken::with_api_key(&api_key, &api_secret)
+    //     .with_identity("mega-cutie")
+    //     .with_name("Mega Cutie")
+    //     .with_grants(access_token::VideoGrants {
+    //         room_join: true,
+    //         room: "my-room".to_string(),
+    //         ..Default::default()
+    //     })
+    //     .to_jwt()
+    //     .unwrap();
+
+    log::info!("Connecting to {} with token {}", &url, &token);
+    let (room, mut rx) = Room::connect(&url, &token, RoomOptions::default())
+        .await
+        .unwrap();
+    log::info!("Connected to room: {} - {}", room.name(), room.sid());
 
     let file = tokio::fs::File::open("change-sophie.wav").await?;
     let mut reader = WavReader::new(BufReader::new(file));
@@ -119,11 +141,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         return Err("only 16-bit samples supported for this demo".into());
     }
 
-    let (room, mut rx) = Room::connect(&url, &token, RoomOptions::default())
-        .await
-        .unwrap();
     let room = Arc::new(room);
-    log::info!("Connected to room: {} - {}", room.name(), room.sid());
 
     let source = NativeAudioSource::new(
         AudioSourceOptions::default(),

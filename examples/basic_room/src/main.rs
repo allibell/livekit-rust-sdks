@@ -7,11 +7,14 @@ use std::env;
 
 #[tokio::main]
 async fn main() {
+    dotenv::dotenv().ok();
+
     env_logger::init();
 
     let url = env::var("LIVEKIT_URL").expect("LIVEKIT_URL is not set");
     let api_key = env::var("LIVEKIT_API_KEY").expect("LIVEKIT_API_KEY is not set");
     let api_secret = env::var("LIVEKIT_API_SECRET").expect("LIVEKIT_API_SECRET is not set");
+    log::info!("hello");
 
     let token = access_token::AccessToken::with_api_key(&api_key, &api_secret)
         .with_identity("rust-bot")
@@ -23,6 +26,8 @@ async fn main() {
         })
         .to_jwt()
         .unwrap();
+
+    log::info!("Connecting to {} with token {}", &url, &token);
 
     let (room, mut rx) = Room::connect(&url, &token, RoomOptions::default())
         .await
