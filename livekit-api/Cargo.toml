@@ -41,7 +41,7 @@ base64 = { version = "0.21", optional = true }
 jsonwebtoken = { version = "9", default-features = false, optional = true }
 
 # signal_client
-tokio-tungstenite = { version = "0.20", optional = true }
+tokio-tungstenite = { version = "0.20", optional = true, features = ["native-tls"] }
 tokio = { version = "1", features = ["full"], optional = true }
 futures-util = { version = "0.3", default-features = false, features = ["sink"], optional = true }
 
