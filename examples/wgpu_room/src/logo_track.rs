@@ -20,7 +20,7 @@ use tokio::task::JoinHandle;
 // The logo must not be bigger than the framebuffer
 const PIXEL_SIZE: usize = 4;
 const FRAME_RATE: u64 = 30;
-const MOVE_SPEED: i32 = 16;
+const MOVE_SPEED: i32 = 4;
 const FB_WIDTH: usize = 1280;
 const FB_HEIGHT: usize = 720;
 
