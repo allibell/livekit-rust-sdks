@@ -130,6 +130,13 @@ impl PeerTransport {
     pub async fn create_and_send_offer(&self, options: OfferOptions) -> EngineResult<()> {
         let mut inner = self.inner.lock().await;
 
+        // For bedrock, we don't need to create an offer
+        if self.peer_connection.signaling_state() == SignalingState::Closed {
+            log::warn!("peer connection is closed, cannot create offer");
+            return Ok(());
+        }
+
+        
         if options.ice_restart {
             inner.restarting_ice = true;
         }
