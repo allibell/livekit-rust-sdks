@@ -89,7 +89,11 @@ impl LkApp {
                             self.video_renderers
                                 .insert((participant.sid(), track.sid()), video_renderer);
                         } else if let RemoteTrack::Audio(_) = track {
-                            let audio
+                            let audio_track = track.clone();
+                            let audio_renderer = AudioRenderer::new(
+                                self.async_runtime.handle(),
+                                audio_track.rtc_track(),
+                            );
                         }
                     }
                     RoomEvent::TrackUnsubscribed {
@@ -169,7 +173,7 @@ impl LkApp {
                     if ui.button("Remote").clicked() {
                         let _ = self.service.send(AsyncCmd::ForceBedrock);
                     }
-                }
+                                }
 
                 for scenario in scenarios {
                     if ui.button(format!("{:?}", scenario)).clicked() {
