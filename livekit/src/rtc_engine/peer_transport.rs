@@ -143,6 +143,10 @@ impl PeerTransport {
 
         if self.peer_connection.signaling_state() == SignalingState::HaveLocalOffer {
             let remote_sdp = self.peer_connection.current_remote_description();
+            if options.bedrock && remote_sdp.is_some() {
+                let answer: SessionDescription = self.peer_connection().create_answer(options).await?;
+                return Ok(answer);
+            } else
             if options.ice_restart && remote_sdp.is_some() {
                 let remote_sdp = remote_sdp.unwrap();
 

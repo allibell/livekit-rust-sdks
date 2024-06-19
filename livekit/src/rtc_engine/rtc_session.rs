@@ -757,6 +757,19 @@ impl SessionInner {
 
                 simulate_leave().await?
             }
+            SimulateScenario::LocalTcp => {
+                self.signal_client
+                    .send(proto::signal_request::Message::Simulate(proto::SimulateScenario {
+                        scenario: Some(
+                            proto::simulate_scenario::Scenario::SwitchCandidateProtocol(
+                                proto::CandidateProtocol::Tcp as i32,
+                            ),
+                        ),
+                    }))
+                    .await;
+
+                simulate_leave().await?
+            }
             SimulateScenario::ForceTls => {
                 self.signal_client
                     .send(proto::signal_request::Message::Simulate(proto::SimulateScenario {

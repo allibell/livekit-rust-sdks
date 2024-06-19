@@ -73,6 +73,7 @@ pub struct OfferOptions {
     pub ice_restart: bool,
     pub offer_to_receive_audio: bool,
     pub offer_to_receive_video: bool,
+    pub bedrock: bool,
 }
 
 #[derive(Debug, Clone, Default)]

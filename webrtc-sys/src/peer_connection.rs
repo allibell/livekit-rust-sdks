@@ -193,6 +193,7 @@ pub mod ffi {
             on_complete: fn(ctx: Box<PeerContext>, error: RtcError),
         );
         fn restart_ice(self: &PeerConnection);
+        fn restart_bedrock(self: &PeerConnection) -> UniquePtr<SessionDescription>;
         fn current_local_description(self: &PeerConnection) -> UniquePtr<SessionDescription>;
         fn current_remote_description(self: &PeerConnection) -> UniquePtr<SessionDescription>;
         fn connection_state(self: &PeerConnection) -> PeerConnectionState;
@@ -216,9 +217,9 @@ pub struct PeerContext(pub Box<dyn Any + Send>);
 impl_thread_safety!(ffi::PeerConnection, Send + Sync);
 
 impl Default for ffi::RtcOfferAnswerOptions {
-    // static const int kUndefined = -1;
-    // static const int kMaxOfferToReceiveMedia = 1;
-    // static const int kOfferToReceiveMediaTrue = 1;
+    static const int kUndefined = -1;
+    static const int kMaxOfferToReceiveMedia = 1;
+    static const int kOfferToReceiveMediaTrue = 1;
 
     fn default() -> Self {
         Self {
