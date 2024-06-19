@@ -44,8 +44,8 @@ impl LkApp {
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         let state = cc
             .storage
-            .and_then(|storage| eframe::get_value(storage, eframe::APP_KEY))
-            .unwrap_or_default();
+            .get_value(eframe::APP_KEY)
+            .and_then(|v| v.ok());
 
         let async_runtime = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
@@ -89,7 +89,7 @@ impl LkApp {
                             self.video_renderers
                                 .insert((participant.sid(), track.sid()), video_renderer);
                         } else if let RemoteTrack::Audio(_) = track {
-                            // TODO(theomonnom): Once we support media devices, we can play audio tracks here
+                            let audio
                         }
                     }
                     RoomEvent::TrackUnsubscribed {
@@ -105,8 +105,16 @@ impl LkApp {
                         publication: _,
                         participant,
                     } => {
-                        if let LocalTrack::Video(ref video_track) = track {
-                            // Also create a new VideoRenderer for local tracks
+                            // If bedrock model, keep video stream local
+                            if self.service.bedrock {
+                                if let LocalTrack::Video(ref video_track) = track {
+                                    if participant.sid() == self.service.room().as_ref().unwrap().local_participant("bedrock").sid() {
+                                        return;
+                                    }
+                                }
+                            }
+
+                            // Use remote renderer
                             let video_renderer = VideoRenderer::new(
                                 self.async_runtime.handle(),
                                 self.render_state.clone(),
@@ -144,6 +152,24 @@ impl LkApp {
                     SimulateScenario::ForceTcp,
                     SimulateScenario::ForceTls,
                 ];
+
+                if self.service.bedrock {
+                    // if we're using bedrock, offer a button/input to set the socket address
+                    ui.horizontal(|ui| {
+                        ui.label("Bedrock Socket Address: ");
+                        ui.text_edit_singleline(&mut self.state.bedrock_address);
+                        if ui.button("Set").clicked() {
+                            let _ = self.service.send(AsyncCmd::SetBedrockAddress {
+                                address: self.state.bedrock_address.clone(),
+                            });
+                        }
+                    });
+                } else {
+                    // just use our -o- sockets
+                    if ui.button("Remote").clicked() {
+                        let _ = self.service.send(AsyncCmd::ForceBedrock);
+                    }
+                }
 
                 for scenario in scenarios {
                     if ui.button(format!("{:?}", scenario)).clicked() {
@@ -399,12 +425,6 @@ impl eframe::App for LkApp {
                 self.left_panel(ui);
             });
 
-        /*egui::TopBottomPanel::bottom("bottom_panel")
-        .resizable(true)
-        .height_range(20.0..=256.0)
-        .show(ctx, |ui| {
-            self.bottom_panel(ui);
-        });*/
 
         egui::SidePanel::right("right_panel")
             .resizable(true)

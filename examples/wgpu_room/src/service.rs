@@ -49,6 +49,7 @@ pub struct LkService {
     ui_rx: mpsc::UnboundedReceiver<UiCmd>,
     handle: tokio::task::JoinHandle<()>,
     inner: Arc<ServiceInner>,
+    bedrock: boolean,
 }
 
 struct ServiceInner {
@@ -224,6 +225,14 @@ async fn service_task(inner: Arc<ServiceInner>, mut cmd_rx: mpsc::UnboundedRecei
                             }
                         }
                     }
+                }
+            }
+            AsyncCmd::SetBedrockAddress { address } => {
+                inner.bedrock = address;
+            }
+            AsyncCmd::ForceBedroock => {
+                if let Some(state) = running_state.as_ref() {
+                    state.room.force_bedrock(inner.bedrock);
                 }
             }
         }

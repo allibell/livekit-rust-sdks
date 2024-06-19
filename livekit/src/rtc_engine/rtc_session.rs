@@ -26,7 +26,7 @@ use std::{
 
 use libwebrtc::{prelude::*, stats::RtcStats};
 use livekit_api::signal_client::{SignalClient, SignalEvent, SignalEvents};
-use livekit_protocol as proto;
+use livekit_protocol::{self as proto, simulate_scenario::Scenario};
 use parking_lot::Mutex;
 use prost::Message;
 use proto::{
@@ -750,6 +750,19 @@ impl SessionInner {
                         scenario: Some(
                             proto::simulate_scenario::Scenario::SwitchCandidateProtocol(
                                 proto::CandidateProtocol::Tcp as i32,
+                            ),
+                        ),
+                    }))
+                    .await;
+
+                simulate_leave().await?
+            }
+            SimulateScenario::ForceTls => {
+                self.signal_client
+                    .send(proto::signal_request::Message::Simulate(proto::SimulateScenario {
+                        scenario: Some(
+                            proto::simulate_scenario::Scenario::SwitchCandidateProtocol(
+                                proto::CandidateProtocol::Tls as i32,
                             ),
                         ),
                     }))
