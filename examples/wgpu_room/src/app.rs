@@ -48,6 +48,7 @@ impl LkApp {
             .and_then(|v| v.ok());
 
         let async_runtime = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(1)
             .enable_all()
             .build()
             .unwrap();
@@ -169,7 +170,7 @@ impl LkApp {
                         }
                     });
                 } else {
-                    // just use our -o- sockets
+                    // just use our remote omni sockets
                     if ui.button("Remote").clicked() {
                         let _ = self.service.send(AsyncCmd::ForceBedrock);
                     }
@@ -220,7 +221,7 @@ impl LkApp {
         });
 
         ui.horizontal(|ui| {
-            ui.label("E2ee Key: ");
+            ui.label("E2EE Key: ");
             ui.text_edit_singleline(&mut self.state.key);
         });
 
@@ -422,6 +423,12 @@ impl eframe::App for LkApp {
             self.top_panel(ui);
         });
 
+        egui::CentralPanel::default().show(ctx, |ui| {
+            self.central_panel(ui);
+            self.right_panel(ui);
+
+        }
+
         egui::SidePanel::left("left_panel")
             .resizable(true)
             .width_range(20.0..=360.0)
@@ -473,4 +480,8 @@ fn draw_video(name: &str, speaking: bool, video_renderer: &VideoRenderer, ui: &m
         egui::FontId::default(),
         egui::Color32::WHITE,
     );
+}
+
+fn use_local_wgpu() -> bool {
+    cfg!(not(target_arch = "wasm32"))
 }

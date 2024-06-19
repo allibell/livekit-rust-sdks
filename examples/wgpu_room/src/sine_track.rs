@@ -146,4 +146,15 @@ impl SineTrack {
                 .unwrap();
         }
     }
+            rtc_source
+                .capture_frame(&AudioFrame {
+                    data: samples_10ms.as_slice().into(),
+                    sample_rate: params.sample_rate,
+                    num_channels: params.num_channels,
+                    samples_per_channel: samples_count as u32 / params.num_channels,
+                })
+                .await
+                .unwrap();
+        }
+    }
 }
